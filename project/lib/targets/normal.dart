@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class NormalTarget extends StatefulWidget {
   final int hp;
-  final int taken;
+  final double taken;
   final void Function()? onTouch;
   const NormalTarget({required this.hp, required this.taken,required this.onTouch,super.key});
 
@@ -33,7 +33,7 @@ class _NormalTargetState extends State<NormalTarget> {
           ),
           ),
           ),
-        Text("${widget.hp - widget.taken} / ${widget.hp}")
+        Text("${(widget.hp - widget.taken).toStringAsFixed(2)} / ${widget.hp}")
       ],
     );
   }

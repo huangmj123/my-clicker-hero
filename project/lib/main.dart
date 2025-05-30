@@ -33,21 +33,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int defeatedEnemies = 0;
+  double currency = 0;
+  int squaresFilled = 0;
   int characterHealth = 10;
-  int dmg = 0;
+  double dmg = 0;
+  double clickdmg = 1;
 
-  void _incrementCounter() {
-    setState(() {
-      defeatedEnemies++;
-    });
-  }
 
     void _clickDamage() {
     setState(() {
-      dmg++;
-      if(dmg==characterHealth){
-        defeatedEnemies++;
+      dmg+=clickdmg;
+      if(dmg>=characterHealth){
+        squaresFilled++;
+        currency+= characterHealth/10;
         dmg = 0;
         characterHealth += 2;
       }
@@ -63,16 +61,32 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text('Spendable Boxes: ${currency.toStringAsFixed(2)}'),
+            Text('Clicks do: ${clickdmg.toStringAsFixed(2)}'),
+            const SizedBox(height: 200,),
+
             const Text(
-              'Enemies Defeated:',
+              'Boxes filled:',
             ),
             Text(
-              '$defeatedEnemies',
+              '$squaresFilled',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             NormalTarget(hp: characterHealth, taken: dmg,onTouch: _clickDamage,),
+
+            const SizedBox(height: 200,),
+            ListTile(
+              title: const Text('decrease clicks required'),
+              subtitle: const Text('add +0.1 to each click (-10 Boxes)'),
+              onTap: () {
+                if(currency>=10){
+                setState(() {
+                  clickdmg+=0.1;
+                  currency-=10;
+                });
+                }
+            },)
           ],
         ),
       ),
