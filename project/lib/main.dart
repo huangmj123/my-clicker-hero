@@ -35,6 +35,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Color boxcolor = Colors.green;
+
   double currency = 0;
   double multiplier = 1;
   int squaresFilled = 0;
@@ -44,16 +46,26 @@ class _MyHomePageState extends State<MyHomePage> {
   double fivesecondstimerdmg = 0;
   Timer? fivesecondstimer;
 
+  double twosecondstimerdmg = 0;
+  Timer? twosecondstimer;
+
   double resetmultiplier = 1;
 
   @override
   void initState() {
     super.initState();
     fivesecondstimer = Timer.periodic(const Duration(seconds: 5), (Timer t) => fivesecondstimerdmgfunc());
+    twosecondstimer = Timer.periodic(const Duration(seconds: 2), (Timer t) => twosecondstimerdmgfunc());
   }
   void fivesecondstimerdmgfunc(){
     setState(() {
       dmg+=fivesecondstimerdmg*resetmultiplier;
+      checkResetBox();
+    });
+  }
+    void twosecondstimerdmgfunc(){
+    setState(() {
+      dmg+=twosecondstimerdmg*resetmultiplier;
       checkResetBox();
     });
   }
@@ -69,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
         squaresFilled++;
         currency+= (characterHealth/10)*multiplier*resetmultiplier;
         dmg = 0;
-        characterHealth += 1;
+        characterHealth += squaresFilled~/25;
       }
   }
 
@@ -85,8 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Text('Spendable Boxes: ${currency.toStringAsFixed(2)}'),
             Text('Clicks do: ${clickdmg.toStringAsFixed(2)}'),
-            Text('Every five seconds, ${fivesecondstimerdmg.toStringAsFixed(2)} clicks'),
-            const SizedBox(height: 200,),
+            Text('Automated Clicks per Second: ${fivesecondstimerdmg/5 + twosecondstimerdmg/2}'),
+            const SizedBox(height: 100,),
 
             const Text(
               'Boxes filled:',
@@ -95,23 +107,34 @@ class _MyHomePageState extends State<MyHomePage> {
               '$squaresFilled',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            NormalTarget(hp: characterHealth, taken: dmg,onTouch: _clickDamage,),
+            NormalTarget(color: boxcolor, hp: characterHealth, taken: dmg,onTouch: _clickDamage,),
 
             const SizedBox(height: 150,),
             ListTile(
-              title: const Text('decrease clicks required'),
-              subtitle: const Text('add +0.1 to each click (-10 Boxes)'),
+              title: const Text('Stronger clicking'),
+              subtitle: const Text('add +0.2 to each click (-5 Boxes)'),
+              onTap: () {
+                if(currency>=5){
+                setState(() {
+                  clickdmg+=0.2;
+                  currency-=5;
+                });
+                }
+            },),
+            ListTile(
+              title: const Text('Does a couple clicks every 2 seconds'),
+              subtitle: const Text('+1 clicks / 2 seconds (-10 Boxes)'),
               onTap: () {
                 if(currency>=10){
                 setState(() {
-                  clickdmg+=0.1;
+                  twosecondstimerdmg+=1;
                   currency-=10;
                 });
                 }
             },),
             ListTile(
-              title: const Text('Does a couple clicks every 5 seconds'),
-              subtitle: const Text('10 clicks / 5 seconds (-25 Boxes)'),
+              title: const Text('Does more clicks every 5 seconds'),
+              subtitle: const Text('+10 clicks / 5 seconds (-25 Boxes)'),
               onTap: () {
                 if(currency>=25){
                 setState(() {
@@ -122,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },),
             ListTile(
               title: const Text('bonus spendable boxes!!'),
-              subtitle: const Text('box duplicator! it only kind of works (*1.1 boxes per box) (-50 Boxes)'),
+              subtitle: const Text('box duplicator! ${"Don't put yourself in, it wouldn't make a new you"} (*1.1 boxes per box) (-50 Boxes)'),
               onTap: () {
                 if(currency>=50){
                 setState(() {
@@ -133,10 +156,11 @@ class _MyHomePageState extends State<MyHomePage> {
             },),
             ListTile(
               title: Text('Youve filled $squaresFilled boxes...'),
-              subtitle: Text('reset to 0 for a x${squaresFilled/10000.0} multiplier on everything (cannot reset with <1000 boxes)'),
+              subtitle: Text('reset to 0 for a x${(squaresFilled/10000.0).toStringAsFixed(3)} multiplier on everything (cannot reset with <100 boxes)'),
               onTap: () {
-                if(squaresFilled>=1000){
+                if(squaresFilled>=100){
                 setState(() {
+                  resetmultiplier += squaresFilled/10000;
                   multiplier = 1;
                   currency = 0;
                   squaresFilled = 0;
@@ -146,6 +170,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
                 }
             },),
+            ListTile(
+              title: const Text('choose your color...'),
+              subtitle: Row(
+                children: [
+                  ElevatedButton(onPressed: (){setState(() {
+                    boxcolor = const Color.fromARGB(255, 255, 0, 0);
+                  });}, child: const Text("Red",style: TextStyle(color: Colors.white),), style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 255, 0, 0)),),),
+                                    ElevatedButton(onPressed: (){setState(() {
+                    boxcolor = Colors.green;
+                  });}, child: const Text("Green",style: TextStyle(color: Colors.white),), style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.green),),),
+                                    ElevatedButton(onPressed: (){setState(() {
+                    boxcolor = Colors.blue;
+                  });}, child: const Text("Blue",style: TextStyle(color: Colors.white),), style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.blue),),),
+                                    ElevatedButton(onPressed: (){setState(() {
+                    boxcolor = Colors.pink;
+                  });}, child: const Text("Pink",style: TextStyle(color: Colors.white),), style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.pink),),),
+                  OutlinedButton(onPressed: (){setState(() {
+                    boxcolor = Colors.white;
+                  });}, child: const Text("White",style: TextStyle(color: Colors.black),), style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.white),),),
+                ]
+                ),),
           ],
         ),
       ),
