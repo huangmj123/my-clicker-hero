@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:project/targets/normal.dart';
 
@@ -38,8 +40,25 @@ class _MyHomePageState extends State<MyHomePage> {
   int characterHealth = 10;
   double dmg = 0;
   double clickdmg = 1;
+  double fivesecondstimerdmg = 0;
+  Timer? fivesecondstimer;
 
-
+  @override
+  void initState() {
+    super.initState();
+    fivesecondstimer = Timer.periodic(const Duration(seconds: 5), (Timer t) => fivesecondstimerdmgfunc());
+  }
+  void fivesecondstimerdmgfunc(){
+    setState(() {
+      dmg+=fivesecondstimerdmg;
+      if(dmg>=characterHealth){
+        squaresFilled++;
+        currency+= characterHealth/10;
+        dmg = 0;
+        characterHealth += 2;
+      }
+    });
+  }
     void _clickDamage() {
     setState(() {
       dmg+=clickdmg;
@@ -86,7 +105,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   currency-=10;
                 });
                 }
-            },)
+            },),
+            ListTile(
+              title: const Text('Does a couple clicks every 5 seconds'),
+              subtitle: const Text('10 clicks / 5 seconds (-25 Boxes)'),
+              onTap: () {
+                if(currency>=25){
+                setState(() {
+                  fivesecondstimerdmg+=10;
+                  currency-=25;
+                });
+                }
+            },),
           ],
         ),
       ),
