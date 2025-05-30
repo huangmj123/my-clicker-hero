@@ -22,12 +22,12 @@ class _NormalTargetState extends State<NormalTarget> {
             children: [
               Container(
                 color: Colors.green,
-                height: 50,
-                width: 50 * (widget.taken / widget.hp)
+                height: 75,
+                width: 75 * (widget.taken / widget.hp)
               ),Container(
                 color: Colors.black,
-                height: 50,
-                width: 50 * ((widget.hp - widget.taken) / widget.hp)
+                height: 75,
+                width: 75 * ((widget.hp - widget.taken) / widget.hp)
               )
             ],
           ),
